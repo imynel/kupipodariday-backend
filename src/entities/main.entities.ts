@@ -1,12 +1,19 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { IsDate } from 'class-validator';
+import {
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export class MainEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @CreateDateColumn()
+  @IsDate()
   createdAt: Date;
 
-  @Column()
+  @UpdateDateColumn()
+  @IsDate()
   updatedAt: Date;
 }

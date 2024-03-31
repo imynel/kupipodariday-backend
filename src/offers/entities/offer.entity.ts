@@ -1,17 +1,19 @@
 import { MainEntity } from 'src/entities/main.entities';
-import { Column, Entity } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Offer extends MainEntity {
   @Column()
-  user: string;
-
-  @Column()
-  item: string;
-
-  @Column()
-  amount: string;
+  amount: number;
 
   @Column()
   hidden: boolean;
+
+  @ManyToOne(() => User, (user) => user.offers)
+  user: User;
+
+  @ManyToOne(() => Wish, (wish) => wish.offers)
+  item: Wish;
 }

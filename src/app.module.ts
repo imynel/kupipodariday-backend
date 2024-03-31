@@ -9,7 +9,7 @@ import { AppService } from './app.service';
 import { User } from './users/entities/user.entity';
 import { Offer } from './offers/entities/offer.entity';
 import { Wish } from './wishes/entities/wish.entity';
-import { wishlist } from './wishlist/entities/wishlist.entity';
+import { Wishlist } from './wishlist/entities/wishlist.entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -19,7 +19,7 @@ import { wishlist } from './wishlist/entities/wishlist.entity';
       username: 'student',
       password: 'student',
       database: 'kupipodariday',
-      entities: [User, Offer, Wish, wishlist],
+      entities: [User, Offer, Wish, Wishlist],
       synchronize: true,
     }),
     UsersModule,

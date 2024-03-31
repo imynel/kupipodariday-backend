@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsInt, IsString } from 'class-validator';
 
 export class CreateWishDto {
   @IsString()
@@ -10,17 +10,9 @@ export class CreateWishDto {
   @IsString()
   image: string;
 
+  @IsInt()
   price: number;
-
-  raised: number;
-
-  @IsString()
-  owner: string;
 
   @IsString()
   description: string;
-
-  // ДОБАВИТЬ OFFER
-
-  copied: number;
 }

@@ -1,8 +1,10 @@
 import { MainEntity } from 'src/entities/main.entities';
-import { Column, Entity } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 
 @Entity()
-export class wishlist extends MainEntity {
+export class Wishlist extends MainEntity {
   @Column()
   name: string;
 
@@ -12,6 +14,10 @@ export class wishlist extends MainEntity {
   @Column()
   image: string;
 
-  // @Column()
-  // items: string[];
+  @ManyToOne(() => User, (user) => user.wishlists)
+  owner: User;
+
+  @ManyToMany(() => Wish, (wish) => wish.wishlists)
+  @JoinTable()
+  items: Wish[];
 }
