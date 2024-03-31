@@ -19,7 +19,7 @@ export class Wish extends MainEntity {
   raised: number; // с округлением до сотых
 
   @Column()
-  ownerм: string;
+  owner: string;
 
   @Column()
   description: string;

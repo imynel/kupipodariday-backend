@@ -2,7 +2,7 @@ import { MainEntity } from 'src/entities/main.entities';
 import { Column, Entity } from 'typeorm';
 
 @Entity()
-export class Wishlistlist extends MainEntity {
+export class wishlist extends MainEntity {
   @Column()
   name: string;
 
