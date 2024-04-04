@@ -9,12 +9,9 @@ export class Wishlist extends MainEntity {
   name: string;
 
   @Column()
-  description: string;
-
-  @Column()
   image: string;
 
-  @ManyToOne(() => User, (user) => user.wishlists)
+  @ManyToOne(() => User, (user) => user.wishlists, { cascade: true })
   owner: User;
 
   @ManyToMany(() => Wish, (wish) => wish.wishlists)

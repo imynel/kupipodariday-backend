@@ -6,62 +6,52 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { User } from 'src/users/entities/user.entity';
-import { last } from 'rxjs';
+import { JwtGuard } from 'src/auth/jwt/jwt.guard';
 
+@UseGuards(JwtGuard)
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createWishDto: CreateWishDto, user: User) {
-    return this.wishesService.create(createWishDto, user);
+  create(@Body() createWishDto: CreateWishDto, @Req() req) {
+    return this.wishesService.create(createWishDto, req.user);
   }
 
   @Get('last')
   findLast() {
-    return this.wishesService.findTopOrLast(true);
+    return this.wishesService.findLast();
   }
 
   @Get('top')
   findTop() {
-    return this.wishesService.findTopOrLast(false);
+    return this.wishesService.findTop();
   }
 
-  // @Get('id')
-
-  // @Patch(':id')
-
-  // @Delete(':id')
-
-  // @Post(':id/copy')
-
-  // @Post()
-  // create(@Body() createWishDto: CreateWishDto) {
-  //   return this.wishesService.create(createWishDto);
-  // }
-
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  @Get(':id')
+  findById(@Param('id') id: number) {
+    return this.wishesService.findById(id);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.wishesService.findOne(+id);
-  // }
+  @Patch(':id')
+  update(@Param('id') id: number, @Body() updateWishDto: UpdateWishDto) {
+    return this.wishesService.update(id, updateWishDto);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-  //   return this.wishesService.update(+id, updateWishDto);
-  // }
+  @Delete(':id')
+  delete(@Param('id') id: number, @Req() req) {
+    return this.wishesService.delete(id, req.user);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.wishesService.remove(+id);
-  // }
+  @Post(':id/copy')
+  copy(@Param('id') id: number, @Req() req) {
+    return this.wishesService.copy(id, req.user);
+  }
 }

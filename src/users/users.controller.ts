@@ -1,49 +1,61 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
+  Req,
+  UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtGuard } from 'src/auth/jwt/jwt.guard';
+import { FindUsersDto } from './dto/find-user.dto';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Get()
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
 
-  // @Patch()
+  @Get('me')
+  async findMe(@Req() req) {
+    const user = req.user;
+    return await this.usersService.findOne(user.id);
+  }
 
-  // @Get()
+  @Patch('me')
+  updateUser(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    this.usersService.updateUser(req.user.id, updateUserDto);
+  }
 
-  // @Get()
+  @Get('me/wishes')
+  getYourWishes(@Req() req) {
+    return this.usersService.getYourWishes(req.user.id);
+  }
 
-  // @Get()
+  @Get(':username')
+  findByUsername(@Param('username') username: string) {
+    return this.usersService.findByUsername(username);
+  }
 
-  // @Post()
+  @Get(':username/wishes')
+  getUserWish(@Param('username') username: string) {
+    return this.usersService.getUserWishes(username);
+  }
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
+  @Post('find')
+  findUser(@Body() findUsersDto: FindUsersDto) {
+    return this.usersService.findQueryUser(findUsersDto.query);
+  }
 
-  // @Get()
-  // findAll() {
-  //   return this.usersService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id) {
+    return this.usersService.findOne(+id);
+  }
 }

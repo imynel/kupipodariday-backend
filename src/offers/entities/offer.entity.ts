@@ -8,12 +8,12 @@ export class Offer extends MainEntity {
   @Column()
   amount: number;
 
-  @Column()
+  @Column({ default: true })
   hidden: boolean;
 
   @ManyToOne(() => User, (user) => user.offers)
   user: User;
 
-  @ManyToOne(() => Wish, (wish) => wish.offers)
+  @ManyToOne(() => Wish, (wish) => wish.offers, { cascade: true })
   item: Wish;
 }

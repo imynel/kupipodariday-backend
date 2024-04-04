@@ -1,26 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreatewishlistDto } from './dto/create-wishlist.dto';
-import { UpdatewishlistDto } from './dto/update-wishlist.dto';
+import { Wishlist } from './entities/wishlist.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { WishesService } from 'src/wishes/wishes.service';
 
 @Injectable()
-export class wishlistService {
-  create(createwishlistDto: CreatewishlistDto) {
-    return 'This action adds a new wishlist';
+export class WishlistService {
+  constructor(
+    @InjectRepository(Wishlist)
+    private readonly wishlistRepository: Repository<Wishlist>,
+    private readonly WishesService: WishesService,
+  ) {}
+
+  async getAllWishlists() {
+    return this.wishlistRepository.find({
+      relations: { owner: true, items: true },
+    });
   }
 
-  findAll() {
-    return `This action returns all wishlist`;
+  async create(createwishlistDto: CreatewishlistDto, user) {
+    const wishes = createwishlistDto.itemsId.map((id) => {
+      return this.WishesService.findById(id);
+    });
+    return Promise.all(wishes).then(async (items) => {
+      const wishlist = this.wishlistRepository.create({
+        ...createwishlistDto,
+        owner: user,
+        items: items,
+      });
+
+      return await this.wishlistRepository.save(wishlist);
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
+  async getWishlishById(id: number) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: { id },
+      relations: { owner: true, items: true },
+    });
+
+    return wishlist;
   }
 
-  update(id: number, updatewishlistDto: UpdatewishlistDto) {
-    return `This action updates a #${id} wishlist`;
+  async updateWishlish(id, updateWishlish) {
+    return await this.wishlistRepository.update(id, updateWishlish);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+  async deleteWishlist(id: number) {
+    const wishlist = this.getWishlishById(id);
+    await this.wishlistRepository.delete(id);
+    return wishlist;
   }
 }

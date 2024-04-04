@@ -1,15 +1,22 @@
-import { IsBoolean, IsInt, IsString, IsUrl } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
 
 export class CreateOfferDto {
-  @IsString()
-  user: string;
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
+  itemId: number;
 
-  @IsUrl()
-  item: string;
-
-  @IsInt()
-  amout: string;
-
+  @IsOptional()
   @IsBoolean()
   hidden: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  amount: number;
 }
