@@ -65,7 +65,20 @@ export class WishesService {
     });
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto) {
+  async update(id: number, updateWishDto: UpdateWishDto, user) {
+    const wish = await this.findById(id);
+    console.log(wish);
+    if (user.id === wish.owner.id) {
+      throw new ForbiddenException(
+        'Вы не можете изменять стоимость подарка, если уже есть желающие скинуться',
+      );
+    }
+
+    if (updateWishDto.price && wish.raised > 0) {
+      throw new ForbiddenException(
+        'Вы не можете изменять стоимость подарка, если уже есть желающие скинуться',
+      );
+    }
     return await this.wishRepository.update(id, updateWishDto);
   }
 

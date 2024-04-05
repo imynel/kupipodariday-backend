@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreatewishlistDto } from './dto/create-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -44,12 +44,25 @@ export class WishlistService {
     return wishlist;
   }
 
-  async updateWishlish(id, updateWishlish) {
+  async updateWishlish(id, updateWishlish, userId) {
+    const wishlist = await this.getWishlishById(id);
+
+    if (wishlist.owner.id !== userId) {
+      throw new ForbiddenException(
+        'Вы не можете редактировать чужие списки подарков',
+      );
+    }
     return await this.wishlistRepository.update(id, updateWishlish);
   }
 
-  async deleteWishlist(id: number) {
-    const wishlist = this.getWishlishById(id);
+  async deleteWishlist(id: number, userId) {
+    const wishlist = await this.getWishlishById(id);
+
+    if (wishlist.owner.id !== userId) {
+      throw new ForbiddenException(
+        'Вы не можете удалять чужие списки подарков',
+      );
+    }
     await this.wishlistRepository.delete(id);
     return wishlist;
   }

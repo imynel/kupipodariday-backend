@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,16 +21,29 @@ export class UsersService {
   ) {}
   // функция создания и сохрание пользователя в бд
   async create(createUserDto: CreateUserDto) {
+    const user = await this.userRepository.findOne({
+      where: [
+        { username: createUserDto.username },
+        { email: createUserDto.email },
+      ],
+    });
+
+    if (user) {
+      throw new ForbiddenException(
+        'Пользователь с таким email или username уже зарегистрирован',
+      );
+    }
+
     const hashedPassword = await this.bcryptService.hashPassword(
       createUserDto.password,
     );
 
-    const user = this.userRepository.create({
+    const newUser = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
     });
 
-    return this.userRepository.save(user);
+    return this.userRepository.save(newUser);
   }
 
   // поиск всех юзеров
@@ -51,6 +68,19 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne({
+      where: [
+        { username: updateUserDto?.username },
+        { email: updateUserDto?.email },
+      ],
+    });
+
+    if (user) {
+      throw new ForbiddenException(
+        'Пользователь с таким email или username уже зарегистрирован',
+      );
+    }
+
     if (updateUserDto.password) {
       const hashedPassword = await this.bcryptService.hashPassword(
         updateUserDto.password,
